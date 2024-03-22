@@ -5,7 +5,10 @@
 #  
 #  Copyright 2024  <woods@turret>
 
+#testing this editor real quick
 
+
+#no way this works that fast
 
 def main(args):
     picam = Picamera2()
