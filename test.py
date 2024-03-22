@@ -19,8 +19,20 @@ def FindContours(img):
     # Canny Edge Detection
     return cv2.Canny(image=img_blur, threshold1=100, threshold2=200) # Canny Edge Detection
 
-def FindGreenBall():
-    return 0
+def FindGreenBall(img):
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+    #set the lower and upper bounds for the green hue
+    lower_green = np.array([50,100,50])
+    upper_green = np.array([150,255,255])
+
+    #create a mask for green colour using inRange function
+    mask = cv2.inRange(hsv, lower_green, upper_green)
+
+    #perform bitwise and on the original image arrays using the mask
+    res = cv2.bitwise_and(img, img, mask=mask)
+    cv2.namedWindow("Camera", cv2.WINDOW_NORMAL)
+    return res
 
 
 def main(args):
@@ -41,13 +53,11 @@ def main(args):
 
         #flip image so that it is the right direction
         frame = cv2.flip(frame, 0)
-
-        #Copy image and set the output image to be displayed
-        output = frame.copy()
-
-        #run the image transformations 
-        output = FindContours(frame)
         
+        #run the image transformations 
+        #output = FindContours(frame)
+        output = FindGreenBall(frame)
+
         #display the output image
         cv2.imshow("Camera", output)
         if cv2.waitKey(1)==ord('q'):
