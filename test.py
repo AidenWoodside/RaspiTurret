@@ -23,16 +23,34 @@ def FindGreenBall(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
     #set the lower and upper bounds for the green hue
-    lower_green = np.array([50,100,50])
-    upper_green = np.array([150,255,255])
+    lower_green = np.array([50,75,50])
+    upper_green = np.array([100,255,255])
 
     #create a mask for green colour using inRange function
     mask = cv2.inRange(hsv, lower_green, upper_green)
 
     #perform bitwise and on the original image arrays using the mask
     res = cv2.bitwise_and(img, img, mask=mask)
+    ret,thresh = cv2.threshold(mask,127,255,0)
+
+    contours, hierarchy = cv2.findContours(thresh.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)    
+
+    if len(contours) != 0:
+        c = max(contours, default = 0, key = cv2.contourArea)
+        if cv2.contourArea(c) > 20:
+            M = cv2.moments(c)
+            if M["m00"] != 0:
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
+            else:
+                cX, cY = 0, 0
+            cv2.drawContours(img, c, -1, 255, 3)
+            cv2.circle(img, (cX, cY), 7, (255, 255, 255), -1)
+
+
+
     cv2.namedWindow("Camera", cv2.WINDOW_NORMAL)
-    return res
+    return img
 
 
 def main(args):
